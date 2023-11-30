@@ -333,6 +333,8 @@ def agenda(contactos: list):
         opcion = pedir_opcion()
 
         #TODO: Se valorará que utilices la diferencia simétrica de conjuntos para comprobar que la opción es un número entero del 1 al 6
+        salida = {8}
+        OPCIONES_MENU = OPCIONES_MENU - salida
         if opcion in OPCIONES_MENU:
             if opcion == 1:
                 agregar_contacto(contactos)
