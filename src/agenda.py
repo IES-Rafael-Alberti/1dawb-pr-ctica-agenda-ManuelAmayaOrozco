@@ -42,7 +42,11 @@ def borrar_consola():
 
 def cargar_contactos(contactos: list):
     """ Carga los contactos iniciales de la agenda desde un fichero
-    ...
+    
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
     """
     #TODO: Controlar los posibles problemas derivados del uso de ficheros...
 
@@ -53,6 +57,10 @@ def cargar_contactos(contactos: list):
 def agregar_contacto(contactos: list):
     """Agrega contactos a la lista
     
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
     """
     try:
         nuev_cont = {}
@@ -99,7 +107,13 @@ def agregar_contacto(contactos: list):
     
 def eliminar_contacto(contactos: list, email: str):
     """ Elimina un contacto de la agenda
-    ...
+    
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
+    email : str
+        El email a usar para elegir el contacto específico.
     """
     try:
         #TODO: Crear función buscar_contacto para recuperar la posición de un contacto con un email determinado
@@ -113,7 +127,22 @@ def eliminar_contacto(contactos: list, email: str):
         print(f"**Error** {e}")
         print("No se eliminó ningún contacto")
 
+
 def buscar_contacto(contactos: list, email: str):
+    """Busca la posición de un contacto específico a través de su email.
+    
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
+    email : str
+        El email a usar para elegir el contacto específico.
+        
+    RETURNS
+    -------
+    pos : int
+        La posición del contacto deseado.
+    """
     pos = None
     for contacto in contactos:
         if (contactos[contacto]["email"] == email):
@@ -122,6 +151,16 @@ def buscar_contacto(contactos: list, email: str):
 
 
 def modificar_contacto(contactos: list, email: str):
+    """Modifica un contacto deseado, esspecificado por su email.
+    
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
+    email : str
+        El email a usar para elegir el contacto específico.
+    """
+    
     encontrado = False
     try:
         for contacto in contactos:
@@ -165,9 +204,15 @@ def modificar_contacto(contactos: list, email: str):
                             
                         
 
-
-
 def mostrar_contactos(contactos: list):
+    """Muestra todos los contactos aactuales en la agenda.
+    
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
+    """
+    
     print("AGENDA ({lencont})".format(lencont = len(contactos)))
     print("------")
     contactos_most = contactos
@@ -182,6 +227,10 @@ def mostrar_contactos(contactos: list):
         
         
 def mostrar_menu():
+    """Muestra el menú de la agenda
+    
+    """
+    
     print("AGENDA")
     print("------")
     print("1. Nuevo contacto")
@@ -196,6 +245,10 @@ def mostrar_menu():
     
 
 def pedir_opcion():
+    """Solicita la opción del menú de la agenda a elegir.
+    
+    """
+    
     try:
         opcion = int(input(">> Seleccione una opción: "))
         if (type(opcion) != int):
@@ -212,6 +265,17 @@ def pedir_opcion():
 
 
 def buscar_por_criterio(contactos: list, crit: str):
+    """Busca un contacto específico de la agenda a través de un criterio previamente elegido.
+    
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
+    crit : str
+        El criterio elegido para buscar el contacto.
+    """
+    
+    
     if crit.lower() == "nombre":
         nom = input("Introduce el nombre del cliente a buscar: ")
         for contacto in contactos:
@@ -255,8 +319,12 @@ def buscar_por_criterio(contactos: list, crit: str):
 
 
 def agenda(contactos: list):
-    """ Ejecuta el menú de la agenda con varias opciones
-    ...
+    """ Ejecuta el menú de la agenda con varias opciones.
+    
+    PARAMETERS
+    ----------
+    contactos : list
+        Lista de los contactos actuales.
     """
     #TODO: Crear un bucle para mostrar el menú y ejecutar las funciones necesarias según la opción seleccionada...
 
@@ -293,14 +361,16 @@ def agenda(contactos: list):
 
 
 def pulse_tecla_para_continuar():
-    """ Muestra un mensaje y realiza una pausa hasta que se pulse una tecla
+    """ Muestra un mensaje y realiza una pausa hasta que se pulse una tecla.
+    
     """
     print("\n")
     os.system("pause")
 
 
 def main():
-    """ Función principal del programa
+    """ Función principal del programa.
+    
     """
     borrar_consola()
 
