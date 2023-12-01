@@ -157,21 +157,13 @@ def modificar_contacto(contactos: list, email: str):
                 crit = input("Introduce el dato del contacto que deseas modificar (nombre, apellido, email o telefono): ")
                 if (crit.lower() in CRITERIOS):
                     if crit.lower() == "nombre":
-                        nom = input("Escribe el nuevo nombre del contacto: ")
-                        if (nom == " " or nom == ""):
-                            raise NameError
-                        nom = nom[:1].title() + nom[1:]
+                        nom = pedir_nombre()
                         contactos[contacto]["nombre"] = nom
                     if crit.lower() == "apellido":
-                        ape = input("Escribe el nuevo apellido del contacto: ")
-                        if (ape == " " or ape == ""):
-                             raise NameError
-                        ape = ape[:1].title() + ape[1:]
+                        ape = pedir_apellido()
                         contactos[contacto]["apellido"] = ape
                     if crit.lower() == "email":
-                        mail = input("Escribe el email del contacto: ")
-                        if (mail.lower() in contactos["email"] or mail == "" or "@" not in mail):
-                            raise NameError
+                        mail = pedir_email(contactos)
                         contactos[contacto]["email"] = mail
                     if crit.lower() == "telefono":
                         pos_tfno = input("Introduce la posición del teléfono que deseas modificar o introduce '+' para añadir uno nuevo: ")
@@ -180,14 +172,26 @@ def modificar_contacto(contactos: list, email: str):
                             tfno = tfno.replace(" ", "")
                             if ("+34" in tfno):
                                 if (len(tfno[3:] != 9)):
-                                    raise NameError
+                                    raise ValueError
                                 else:
                                     contactos[contacto]["telefono"].append(tfno)
                             if (len(tfno) != 9):
-                                raise NameError
+                                raise ValueError
                             else:
                                 contactos[contacto]["telefono"].append(tfno)
-    except NameError:
+                        else:
+                            tfno = input("Escribe el nuevo teléfono del contacto: ")
+                            tfno = tfno.replace(" ", "")
+                            if ("+34" in tfno):
+                                if (len(tfno[3:] != 9)):
+                                    raise ValueError
+                                else:
+                                    contactos[contacto]["telefono"] = tfno
+                            if (len(tfno) != 9):
+                                raise ValueError
+                            else:
+                                contactos[contacto]["telefono"] = tfno                       
+    except ValueError:
         print("Valor introducido no válido.")
                             
                         
@@ -218,7 +222,7 @@ def mostrar_contactos(contactos: list):
 def pedir_nombre():
     nom = input("Escribe el nombre del contacto: ")
     if (nom == " " or nom == ""):
-            raise NameError
+            raise ValueError
     nom = nom[:1].title() + nom[1:]
     return nom
 
@@ -226,7 +230,7 @@ def pedir_nombre():
 def pedir_apellido():
     ape = input("Escribe el apellido del contacto: ")
     if (ape == " " or ape == ""):
-        raise NameError
+        raise ValueError
     ape = ape[:1].title() + ape[1:]
     return ape
 
@@ -269,9 +273,9 @@ def pedir_telefono():
 def validar_telefono(input_tel: str):
     if ("+34" in input_tel):
         if (len(input_tel[3:] != 9)):
-            raise NameError("Longitud teléfono incorrecta.")
+            raise ValueError("Longitud teléfono incorrecta.")
     elif (len(input_tel) != 9):
-            raise NameError("Longitud teléfono incorrecta.")
+            raise ValueError("Longitud teléfono incorrecta.")
 
 
         
