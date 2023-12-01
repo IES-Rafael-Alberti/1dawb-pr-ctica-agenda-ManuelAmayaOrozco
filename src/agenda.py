@@ -151,11 +151,9 @@ def modificar_contacto(contactos: list, email: str):
         El email a usar para elegir el contacto específico.
     """
     
-    encontrado = False
     try:
         for contacto in range(len(contactos)):
             if (email == contactos[contacto]["email"]):
-                encontrado = True
                 crit = input("Introduce el dato del contacto que deseas modificar (nombre, apellido, email o telefonos): ")
                 if (crit.lower() in CRITERIOS):
                     if crit.lower() == "nombre":
