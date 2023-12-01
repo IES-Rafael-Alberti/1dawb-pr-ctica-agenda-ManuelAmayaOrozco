@@ -156,7 +156,7 @@ def modificar_contacto(contactos: list, email: str):
         for contacto in range(len(contactos)):
             if (email == contactos[contacto]["email"]):
                 encontrado = True
-                crit = input("Introduce el dato del contacto que deseas modificar (nombre, apellido, email o telefono): ")
+                crit = input("Introduce el dato del contacto que deseas modificar (nombre, apellido, email o telefonos): ")
                 if (crit.lower() in CRITERIOS):
                     if crit.lower() == "nombre":
                         nom = pedir_nombre()
@@ -168,6 +168,18 @@ def modificar_contacto(contactos: list, email: str):
                         mail = pedir_email(contactos)
                         contactos[contacto]["email"] = mail
                     if crit.lower() == "telefonos":
+                        if (len(contactos[contacto]) == 3):
+                            print("Teléfonos: Ninguno")
+                        else:
+                            ser = "Teléfonos: "
+                            for telefono in contactos[contacto]["telefonos"]:
+                                encontrar = ("+34" in telefono)
+                                if (encontrar == True):
+                                    telefono = "+34-" + telefono[3:]
+                                    ser += "{telefono} / ".format(telefono = telefono)
+                                else:
+                                    ser += "{telefono} / ".format(telefono = telefono)
+                            print(ser[:-3])
                         pos_tfno = input("Introduce la posición del teléfono que deseas modificar o introduce '+' para añadir uno nuevo: ")
                         if pos_tfno == "+":
                             tfno = input("Escribe el nuevo teléfono del contacto: ")
@@ -182,17 +194,19 @@ def modificar_contacto(contactos: list, email: str):
                             else:
                                 contactos[contacto]["telefonos"].append(tfno)
                         else:
+                            pos_tfno = int(pos_tfno)
+                            pos_tfno -= 1
                             tfno = input("Escribe el nuevo teléfono del contacto: ")
                             tfno = tfno.replace(" ", "")
                             if ("+34" in tfno):
                                 if (len(tfno[3:] != 9)):
                                     raise ValueError
                                 else:
-                                    contactos[contacto]["telefonos"] = tfno
+                                    contactos[contacto]["telefonos"][pos_tfno] = tfno
                             if (len(tfno) != 9):
                                 raise ValueError
                             else:
-                                contactos[contacto]["telefonos"] = tfno                       
+                                contactos[contacto]["telefonos"][pos_tfno] = tfno                       
     except ValueError:
         print("Valor introducido no válido.")
                             
