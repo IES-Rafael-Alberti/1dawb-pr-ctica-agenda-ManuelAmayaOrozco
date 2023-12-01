@@ -116,7 +116,7 @@ def eliminar_contacto(contactos: list, email: str):
         print("No se eliminó ningún contacto")
 
 
-def buscar_contacto(contactos: list, email: str):
+def buscar_contacto(contactos: list, email: str) -> int:
     """Busca la posición de un contacto específico a través de su email.
     
     PARAMETERS
@@ -134,7 +134,7 @@ def buscar_contacto(contactos: list, email: str):
     pos = None
     for contacto in contactos:
         if (contactos[contacto]["email"] == email):
-            pos = contactos[contacto]
+            pos = contacto
     return pos
 
 
@@ -207,15 +207,12 @@ def mostrar_contactos(contactos: list):
     
     print("AGENDA ({lencont})".format(lencont = len(contactos)))
     print("------")
-    contactos_most = contactos
-    for contacto in contactos_most:
-        contactos_most.sort(contactos_most[contacto]["nombre"])
-    for contacto in contactos_most:
-        print("Nombre: {nom} {ape} ({email})".format(nom = contactos_most[contacto]["nombre"], ape = contactos_most[contacto]["apellido"], email = contactos_most[contacto]["email"]))
-        if (contactos_most[contacto]["telefono"] == None):
+    for contacto in contactos:
+        print("Nombre: {nom} {ape} ({email})".format(nom = contactos[contacto]["nombre"], ape = contactos[contacto]["apellido"], email = contactos[contacto]["email"]))
+        if (contactos[contacto]["telefono"] == None):
             print("Teléfono: Ninguno")
         else:
-            print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos_most[contacto]["telefono"]))))
+            print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefono"]))))
         print("......")
         
         
