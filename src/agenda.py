@@ -52,7 +52,18 @@ def cargar_contactos(contactos: list):
 
     with open(RUTA_FICHERO, 'r') as fichero:
         for linea in fichero:
-            print(linea)
+            client = linea.split(";")
+            nuev_cont = {}
+            nuev_cont["nombre"] = client[0]
+            nuev_cont["apellido"] = client[1]
+            nuev_cont["email"] = client[2]
+            list_tfno = []
+            if (len(client) > 3):
+                for tfno in client[3:]:
+                    list_tfno.append(tfno)
+            nuev_cont["telefono"] = list_tfno
+            contactos.append(nuev_cont)
+                
 
 def agregar_contacto(contactos: list):
     """Agrega contactos a la lista
@@ -62,44 +73,21 @@ def agregar_contacto(contactos: list):
     contactos : list
         Lista de los contactos actuales.
     """
-    try:
-        nuev_cont = {}
+    nuev_cont = {}
         
-        nom = input("Escribe el nombre del contacto: ")
-        if (nom == " " or nom == ""):
-            raise NameError
-        nom = nom[:1].title() + nom[1:]
-        nuev_cont["nombre"] = nom
+    nom = pedir_nombre()
+    nuev_cont["nombre"] = nom
         
-        ape = input("Escribe el apellido del contacto: ")
-        if (ape == " " or ape == ""):
-            raise NameError
-        ape = ape[:1].title() + ape[1:]
-        nuev_cont["apellido"] = ape
+    ape = pedir_apellido()
+    nuev_cont["apellido"] = ape
         
-        email = input("Escribe el email del contacto: ")
-        if (email.lower() in contactos[email] or email == "" or "@" not in email):
-            raise NameError
-        nuev_cont["email"] = email
+    email = pedir_email(contactos)
+    nuev_cont["email"] = email
         
-        tfno = "x"
-        lis_tfno = []
-        while (tfno != ""):
-            tfno = input("Escribe el teléfono del contacto: ")
-            if (tfno != ""):
-                tfno = tfno.replace(" ", "")
-                if ("+34" in tfno):
-                    if (len(tfno[3:] != 9)):
-                        raise NameError
-                    else:
-                        lis_tfno.append(tfno)
-                if (len(tfno) != 9):
-                    raise NameError
-                else:
-                    lis_tfno.append(tfno)
-        nuev_cont["telefonos"] = lis_tfno
-    except NameError:
-        print("Valor introducido no válido.")
+    lis_tfno = pedir_telefono()
+    nuev_cont["telefonos"] = lis_tfno
+        
+    contactos.append(nuev_cont)
                 
             
         
@@ -216,7 +204,8 @@ def mostrar_contactos(contactos: list):
     print("AGENDA ({lencont})".format(lencont = len(contactos)))
     print("------")
     contactos_most = contactos
-    contactos_most.sort(contactos_most["nombre"])
+    for contacto in contactos_most:
+        contactos_most.sort(contactos_most[contacto]["nombre"])
     for contacto in contactos_most:
         print("Nombre: {nom} {ape} ({email})".format(nom = contactos_most[contacto]["nombre"], ape = contactos_most[contacto]["apellido"], email = contactos_most[contacto]["email"]))
         if (contactos_most[contacto]["telefono"] == None):
@@ -225,6 +214,66 @@ def mostrar_contactos(contactos: list):
             print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos_most[contacto]["telefono"]))))
         print("......")
         
+        
+def pedir_nombre():
+    nom = input("Escribe el nombre del contacto: ")
+    if (nom == " " or nom == ""):
+            raise NameError
+    nom = nom[:1].title() + nom[1:]
+    return nom
+
+
+def pedir_apellido():
+    ape = input("Escribe el apellido del contacto: ")
+    if (ape == " " or ape == ""):
+        raise NameError
+    ape = ape[:1].title() + ape[1:]
+    return ape
+
+
+def pedir_email(contactos_iniciales: list):
+    email = input("Escribe el email del contacto: ")
+    if (email.lower() in contactos_iniciales):
+        raise ValueError("el email ya existe en la agenda")
+    elif (email == ""):
+        raise ValueError("el email no puede ser una cadena vacía")
+    elif ("@" not in email):
+        raise ValueError("el email no es un correo válido")
+    else:
+        return email
+
+
+def validar_email(contactos_iniciales: list, email: str):
+    if (email.lower() in contactos_iniciales):
+        raise ValueError("el email ya existe en la agenda")
+    elif (email == ""):
+        raise ValueError("el email no puede ser una cadena vacía")
+    elif ("@" not in email):
+        raise ValueError("el email no es un correo válido")
+    else:
+        return email
+        
+        
+def pedir_telefono():
+    tfno = "x"
+    lis_tfno = []
+    while (tfno != ""):
+        tfno = input("Escribe el teléfono del contacto: ")
+        if (tfno != ""):
+            tfno = tfno.replace(" ", "")
+            validar_telefono(tfno)
+            lis_tfno.append(tfno)
+    return lis_tfno        
+        
+        
+def validar_telefono(input_tel: str):
+    if ("+34" in input_tel):
+        if (len(input_tel[3:] != 9)):
+            raise NameError("Longitud teléfono incorrecta.")
+    elif (len(input_tel) != 9):
+            raise NameError("Longitud teléfono incorrecta.")
+
+
         
 def mostrar_menu():
     """Muestra el menú de la agenda
