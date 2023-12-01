@@ -27,7 +27,7 @@ RUTA_FICHERO = path.join(RUTA, NOMBRE_FICHERO)
 
 #TODO: Crear un conjunto con las posibles opciones del menú de la agenda
 OPCIONES_MENU = {1, 2, 3, 4, 5, 6, 7, 8}
-CRITERIOS = {"nombre", "apellido", "email", "telefono"}
+CRITERIOS = {"nombre", "apellido", "email", "telefonos"}
 #TODO: Utiliza este conjunto en las funciones agenda() y pedir_opcion()
 
 
@@ -61,7 +61,7 @@ def cargar_contactos(contactos: list):
             if (len(client) > 3):
                 for tfno in client[3:]:
                     list_tfno.append(tfno)
-            nuev_cont["telefono"] = list_tfno
+                nuev_cont["telefonos"] = list_tfno
             contactos.append(nuev_cont)
                 
 
@@ -85,7 +85,8 @@ def agregar_contacto(contactos: list):
     nuev_cont["email"] = email
         
     lis_tfno = pedir_telefono()
-    nuev_cont["telefonos"] = lis_tfno
+    if (lis_tfno != None):
+        nuev_cont["telefonos"] = lis_tfno
         
     contactos.append(nuev_cont)
                 
@@ -131,8 +132,9 @@ def buscar_contacto(contactos: list, email: str) -> int:
     pos : int
         La posición del contacto deseado.
     """
+    
     pos = None
-    for contacto in contactos:
+    for contacto in range(len(contactos)):
         if (contactos[contacto]["email"] == email):
             pos = contacto
     return pos
@@ -151,7 +153,7 @@ def modificar_contacto(contactos: list, email: str):
     
     encontrado = False
     try:
-        for contacto in contactos:
+        for contacto in range(len(contactos)):
             if (email == contactos[contacto]["email"]):
                 encontrado = True
                 crit = input("Introduce el dato del contacto que deseas modificar (nombre, apellido, email o telefono): ")
@@ -165,7 +167,7 @@ def modificar_contacto(contactos: list, email: str):
                     if crit.lower() == "email":
                         mail = pedir_email(contactos)
                         contactos[contacto]["email"] = mail
-                    if crit.lower() == "telefono":
+                    if crit.lower() == "telefonos":
                         pos_tfno = input("Introduce la posición del teléfono que deseas modificar o introduce '+' para añadir uno nuevo: ")
                         if pos_tfno == "+":
                             tfno = input("Escribe el nuevo teléfono del contacto: ")
@@ -174,11 +176,11 @@ def modificar_contacto(contactos: list, email: str):
                                 if (len(tfno[3:] != 9)):
                                     raise ValueError
                                 else:
-                                    contactos[contacto]["telefono"].append(tfno)
+                                    contactos[contacto]["telefonos"].append(tfno)
                             if (len(tfno) != 9):
                                 raise ValueError
                             else:
-                                contactos[contacto]["telefono"].append(tfno)
+                                contactos[contacto]["telefonos"].append(tfno)
                         else:
                             tfno = input("Escribe el nuevo teléfono del contacto: ")
                             tfno = tfno.replace(" ", "")
@@ -186,18 +188,18 @@ def modificar_contacto(contactos: list, email: str):
                                 if (len(tfno[3:] != 9)):
                                     raise ValueError
                                 else:
-                                    contactos[contacto]["telefono"] = tfno
+                                    contactos[contacto]["telefonos"] = tfno
                             if (len(tfno) != 9):
                                 raise ValueError
                             else:
-                                contactos[contacto]["telefono"] = tfno                       
+                                contactos[contacto]["telefonos"] = tfno                       
     except ValueError:
         print("Valor introducido no válido.")
                             
                         
 
 def mostrar_contactos(contactos: list):
-    """Muestra todos los contactos aactuales en la agenda.
+    """Muestra todos los contactos actuales en la agenda.
     
     PARAMETERS
     ----------
@@ -207,16 +209,28 @@ def mostrar_contactos(contactos: list):
     
     print("AGENDA ({lencont})".format(lencont = len(contactos)))
     print("------")
-    for contacto in contactos:
+    for contacto in range(len(contactos)):
         print("Nombre: {nom} {ape} ({email})".format(nom = contactos[contacto]["nombre"], ape = contactos[contacto]["apellido"], email = contactos[contacto]["email"]))
-        if (contactos[contacto]["telefono"] == None):
-            print("Teléfono: Ninguno")
+        if (len(contactos[contacto]) == 3):
+            print("Teléfonos: Ninguno")
         else:
-            print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefono"]))))
+            ser = "Teléfonos: "
+            for telefono in contactos[contacto]["telefonos"]:
+                encontrar = ("+34" in telefono)
+                if (encontrar == True):
+                    telefono = "+34-" + telefono[3:]
+                    ser += "{telefono} / ".format(telefono = telefono)
+                else:
+                    ser += "{telefono} / ".format(telefono = telefono)
+            print(ser[:-3])
         print("......")
         
         
 def pedir_nombre():
+    """Pide un nombre que será introducido en el contacto.
+    
+    """
+    
     nom = input("Escribe el nombre del contacto: ")
     if (nom == " " or nom == ""):
             raise ValueError
@@ -225,6 +239,10 @@ def pedir_nombre():
 
 
 def pedir_apellido():
+    """Pide un apellido que será introducido en el contacto.
+    
+    """
+    
     ape = input("Escribe el apellido del contacto: ")
     if (ape == " " or ape == ""):
         raise ValueError
@@ -233,6 +251,14 @@ def pedir_apellido():
 
 
 def pedir_email(contactos_iniciales: list):
+    """Pide un email que será introducido en el contacto.
+    
+    PARAMETERS
+    ----------
+    contactos_iniciales : list
+        La lista de contactos introducida inicialmente
+    """
+    
     email = input("Escribe el email del contacto: ")
     if (email.lower() in contactos_iniciales):
         raise ValueError("el email ya existe en la agenda")
@@ -245,17 +271,29 @@ def pedir_email(contactos_iniciales: list):
 
 
 def validar_email(contactos_iniciales: list, email: str):
+    """Se asegura de que el email introducido es correcto
+    
+    PARAMETERS
+    ----------
+    contactos_iniciales : list
+        La lista de contactos introducida inicialmente
+    email : str
+        El email que será validado.
+    """
+    
     if (email.lower() in contactos_iniciales):
         raise ValueError("el email ya existe en la agenda")
     elif (email == ""):
         raise ValueError("el email no puede ser una cadena vacía")
     elif ("@" not in email):
         raise ValueError("el email no es un correo válido")
-    else:
-        return email
         
         
 def pedir_telefono():
+    """Pide el teléfono a introducir en el contacto.
+    
+    """
+    
     tfno = "x"
     lis_tfno = []
     while (tfno != ""):
@@ -268,11 +306,22 @@ def pedir_telefono():
         
         
 def validar_telefono(input_tel: str):
-    if ("+34" in input_tel):
-        if (len(input_tel[3:] != 9)):
-            raise ValueError("Longitud teléfono incorrecta.")
+    """Se asegura de que el telefono introducido es correcto.
+    
+    PARAMETERS
+    ----------
+    input_tel : str
+        El telefono introducido que será validado.
+    """
+    
+    encontrar = ("+34" in input_tel)
+    if (encontrar == True):
+        if (len(input_tel[3:]) != 9):
+            raise ValueError("Longitud teléfono incorrecta.") 
     elif (len(input_tel) != 9):
             raise ValueError("Longitud teléfono incorrecta.")
+
+        
 
 
         
@@ -325,47 +374,55 @@ def buscar_por_criterio(contactos: list, crit: str):
         El criterio elegido para buscar el contacto.
     """
     
-    
     if crit.lower() == "nombre":
         nom = input("Introduce el nombre del cliente a buscar: ")
-        for contacto in contactos:
+        for contacto in range(len(contactos)):
             if contactos[contacto]["nombre"] == nom:
                 print("Nombre: {nom} {ape} ({email})".format(nom = contactos[contacto]["nombre"], ape = contactos[contacto]["apellido"], email = contactos[contacto]["email"]))
-                if (contactos[contacto]["telefono"] == None):
-                    print("Teléfono: Ninguno")
+                if (contactos[contacto]["telefonos"] == None):
+                    print("Teléfonos: Ninguno")
                 else:
-                    print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefono"]))))
+                    print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefonos"]))))
                 print("......")
     if crit.lower() == "apellido":
         ape = input("Introduce el apellido del cliente a buscar: ")
-        for contacto in contactos:
+        for contacto in range(len(contactos)):
             if contactos[contacto]["apellido"] == ape:
                 print("Nombre: {nom} {ape} ({email})".format(nom = contactos[contacto]["nombre"], ape = contactos[contacto]["apellido"], email = contactos[contacto]["email"]))
-                if (contactos[contacto]["telefono"] == None):
-                    print("Teléfono: Ninguno")
+                if (contactos[contacto]["telefonos"] == None):
+                    print("Teléfonos: Ninguno")
                 else:
-                    print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefono"]))))
+                    print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefonos"]))))
                 print("......")
     if crit.lower() == "email":
         email = input("Introduce el email del cliente a buscar: ")
-        for contacto in contactos:
+        for contacto in range(len(contactos)):
             if contactos[contacto]["email"] == email:
                 print("Nombre: {nom} {ape} ({email})".format(nom = contactos[contacto]["nombre"], ape = contactos[contacto]["apellido"], email = contactos[contacto]["email"]))
-                if (contactos[contacto]["telefono"] == None):
-                    print("Teléfono: Ninguno")
+                if (contactos[contacto]["telefonos"] == None):
+                    print("Teléfonos: Ninguno")
                 else:
-                    print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefono"]))))
+                    print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefonos"]))))
                 print("......")
-    if crit.lower() == "telefono":
+    if crit.lower() == "telefonos":
         tfno = input("Introduce el teléfono del cliente a buscar: ")
-        for contacto in contactos:
-            if contactos[contacto]["telefono"] == tfno:
-                print("Nombre: {nom} {ape} ({email})".format(nom = contactos[contacto]["nombre"], ape = contactos[contacto]["apellido"], email = contactos[contacto]["email"]))
-                if (contactos[contacto]["telefono"] == None):
-                    print("Teléfono: Ninguno")
-                else:
-                    print("Teléfonos: {tfno}".format(tfno = (" / ".join(contactos[contacto]["telefono"]))))
-                print("......")
+        for contacto in range(len(contactos)):
+            for telefono in range(len(contactos[contacto]["telefonos"])):
+                if contactos[contacto]["telefonos"][telefono] == tfno:
+                    print("Nombre: {nom} {ape} ({email})".format(nom = contactos[contacto]["nombre"], ape = contactos[contacto]["apellido"], email = contactos[contacto]["email"]))
+                    if (len(contactos[contacto]) == 3):
+                        print("Teléfonos: Ninguno")
+                    else:
+                        ser = "Teléfonos: "
+                        for telefono in contactos[contacto]["telefonos"]:
+                            encontrar = ("+34" in telefono)
+                            if (encontrar == True):
+                                telefono = "+34-" + telefono[3:]
+                                ser += "{telefono} / ".format(telefono = telefono)
+                            else:
+                                ser += "{telefono} / ".format(telefono = telefono)
+                        print(ser[:-3])
+                    print("......")
 
 
 def agenda(contactos: list):
@@ -376,15 +433,16 @@ def agenda(contactos: list):
     contactos : list
         Lista de los contactos actuales.
     """
+    
     #TODO: Crear un bucle para mostrar el menú y ejecutar las funciones necesarias según la opción seleccionada...
-
-    while opcion != 7:
+    opcion = None
+    while opcion != 8:
         mostrar_menu()
         opcion = pedir_opcion()
 
         #TODO: Se valorará que utilices la diferencia simétrica de conjuntos para comprobar que la opción es un número entero del 1 al 6
         salida = {8}
-        OPCIONES_MENU = OPCIONES_MENU - salida
+        OPCIONES_MENU.discard(salida)
         if opcion in OPCIONES_MENU:
             if opcion == 1:
                 agregar_contacto(contactos)
@@ -402,7 +460,7 @@ def agenda(contactos: list):
                 cargar_contactos(contactos)
                 print("Agenda devuelta a su estado inicial.")
             elif opcion == 6:
-                crit = input("Introduce el criterio por el que deseas buscar (nombre, apellido, email o telefono): ")
+                crit = input("Introduce el criterio por el que deseas buscar (nombre, apellido, email o telefonos): ")
                 if (crit.lower() in CRITERIOS):
                     buscar_por_criterio(contactos, crit)
                 else:
